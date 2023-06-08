@@ -11,7 +11,7 @@ from core import (
     certificates_store,
     get_signer,
     get_signature,
-    get_unsigned
+    get_unsigned,
 )
 
 app = FastAPI()
@@ -75,10 +75,11 @@ async def sign_file(
     и имя файла с прикрепленной подписью.
     """
 
-    cert = await certificates_store().Item(cert)
-    signer = await get_signer(cert, pin)
+    cert = certificates_store().Item(cert)
+    signer = get_signer(cert, pin)
     try:
-        signature = await get_signature(file.read(), signer)
+
+        signature = get_signature(await file.read(), signer)
     except Exception:
         raise HTTPException(
             400,
@@ -87,11 +88,8 @@ async def sign_file(
         )
 
     # path_sig = Path(__file__).parent / 'temp/sig_test.p7s'
-    # path_sig.write_text(signature)
-    # # path_sig.write_bytes(b64decode(signature))
-
-    # path_unsig = Path(__file__).parent / 'temp/unsig_test.pdf'
-    # path_unsig.write_bytes(b64decode(content))
+    # # path_sig.write_text(signature)
+    # path_sig.write_bytes(b64decode(signature))
 
     return {
         'signedContent': signature,
@@ -105,8 +103,11 @@ async def unsign_file(file: UploadFile):
     Удаление подписи из файла. Возвращает json оригинала документа и имя файла.
     """
 
-    signature = (await file.read()).decode()
-    unsigned_data = await get_unsigned(signature)
+    signature = (await file.read())
+    unsigned_data = get_unsigned(signature)
+
+    # path_unsig = Path(__file__).parent / 'temp/unsig_test.pdf'
+    # path_unsig.write_bytes(b64decode(unsigned_data))
 
     return {
         'Content': unsigned_data,

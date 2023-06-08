@@ -65,7 +65,22 @@ def get_signature(file, signer):
     return signed_data.SignCades(signer, pycades.CADESCOM_CADES_BES)
 
 
-def get_unsigned(signature):
+def get_unsigned(signature: bytes) -> str:
     unsigned_data = pycades.SignedData()
+    signature = b64encode(signature).decode()
     unsigned_data.VerifyCades(signature, pycades.CADESCOM_CADES_BES)
     return unsigned_data.Content
+
+
+# def gost_hash(data: Union[str, bytes, bytearray], encoding="utf-8") -> str:
+#     if isinstance(data, str):
+#         data = bytes(data.encode(encoding))
+#
+#     hashed_data = pycades.HashedData()
+#     hashed_data.DataEncoding = pycades.CADESCOM_BASE64_TO_BINARY
+#     hashed_data.Algorithm = (
+#         pycades.CADESCOM_HASH_ALGORITHM_CP_GOST_3411_2012_256
+#     )
+#     hashed_data.Hash(b64encode(data).decode())
+#     byte_hash = bytes.fromhex(hashed_data.Value)
+#     return b64encode(byte_hash).decode()
