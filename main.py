@@ -12,6 +12,7 @@ from core import (
     get_signer,
     get_signature,
     get_unsigned,
+    gost_hash
 )
 
 app = FastAPI()
@@ -78,8 +79,8 @@ async def sign_file(
     cert = certificates_store().Item(cert)
     signer = get_signer(cert, pin)
     try:
-
-        signature = get_signature(await file.read(), signer)
+        hash_file = gost_hash(await file.read())
+        signature = get_signature(hash_file, signer)
     except Exception:
         raise HTTPException(
             400,
