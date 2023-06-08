@@ -4,6 +4,7 @@ import pycades
 
 
 def certificate_info(cert):
+    """Данные сертификата."""
     pkey = cert.PrivateKey
     algo = cert.PublicKey().Algorithm
 
@@ -52,6 +53,7 @@ def certificates_store():
 
 
 def get_signer(cert, pin):
+    """Формирование подписи."""
     signer = pycades.Signer()
     signer.Certificate = cert
     signer.CheckCertificate = True
@@ -60,12 +62,14 @@ def get_signer(cert, pin):
 
 
 def get_signature(file, signer):
+    """Подпись файла."""
     signed_data = pycades.SignedData()
     signed_data.Content = b64encode(file).decode()
     return signed_data.SignCades(signer, pycades.CADESCOM_CADES_BES)
 
 
 def get_unsigned(signature: bytes) -> str:
+    """Разподписать файл."""
     unsigned_data = pycades.SignedData()
     signature = b64encode(signature).decode()
     unsigned_data.VerifyCades(signature, pycades.CADESCOM_CADES_BES)
